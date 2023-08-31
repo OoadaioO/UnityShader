@@ -10,7 +10,7 @@ Unity版本: Unity2021.3.5f1
 
 
 
-学习途径：
+## 学习途径：
 
 [Unity Shader入门精要 (豆瓣)](https://book.douban.com/subject/26821639/)
 
@@ -26,6 +26,6 @@ Unity手册特别详尽的指导我如何进行操作，免得我记忆各种关
 
 
 
-参考项目：
+## 参考项目：
 
 [《Unity Shader入门精要》-github项目](https://github.com/candycat1992/Unity_Shaders_Book)
