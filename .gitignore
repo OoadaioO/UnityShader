@@ -76,3 +76,5 @@ crashlytics-build.properties
 Firebase/
 .idea/
 Assets/Editor/Platform-Dependencies/Android/*.lockfile
+
+Notes/
