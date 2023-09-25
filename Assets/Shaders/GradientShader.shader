@@ -24,24 +24,24 @@ Shader "Custom/GradientShader"
             #include "Lighting.cginc"
 
             fixed4 _Color;
-            fixed4 _Specular;
-            fixed _Gloss;
             sampler2D _RampTex;
             fixed4 _RampTex_ST;
+            fixed4 _Specular;
+            fixed _Gloss;
 
             struct v2f
             {
-                float2 uv : TEXCOORD0;
+                float3 worldNormal:TEXCOORD0;
+                float3 worldPos:TEXCOORD1;
                 float4 vertex : SV_POSITION;
-                float3 worldNormal:POSITION1;
-                float3 worldPos:POSITION2;
+                float2 uv : TEXCOORD2;
             };
 
 
             v2f vert (appdata_base v)
             {
                 v2f o;
-                o.vertex = UnityViewToClipPos(v.vertex);
+                o.vertex = UnityObjectToClipPos(v.vertex);
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 o.worldPos = mul(unity_ObjectToWorld,v.vertex).xyz;
                 o.uv = TRANSFORM_TEX(v.texcoord,_RampTex);
