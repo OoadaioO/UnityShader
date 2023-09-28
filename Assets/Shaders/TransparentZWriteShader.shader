@@ -1,20 +1,27 @@
-Shader "Custom/AlphaTestShader"
+Shader "Custom/TransparentZWriteShader"
 {
     Properties
     {
         _Color ("Color",Color) = (1,1,1,1)
         _MainTex ("Texture", 2D) = "white" {}
-        _CutOff("Cut off",Range(0,1))=0
+        _AlphaScale("Alpha Scale",Range(0,1))=0
     }
     SubShader
     {
-        Tags { "Queue"="AlphaTest" "RenderType"="TransparentCutout" "IgnoreProjector"="True" }
+        Tags { "Queue"="Transparent" "RenderType"="Transparent" "IgnoreProjector"="True" }
         LOD 100
+
+        Pass{
+            Tags { "LightMode" = "ForwardBase"}
+            ZWrite On
+            ColorMask 0
+        }
 
         Pass
         {
             Tags { "LightMode" = "ForwardBase"}
-            Cull Off
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
 
             CGPROGRAM
             #pragma vertex vert
@@ -33,7 +40,8 @@ Shader "Custom/AlphaTestShader"
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            fixed _CutOff;
+            fixed _AlphaScale;
+            fixed4 _Color;
 
             v2f vert (appdata_base v)
             {
@@ -53,12 +61,11 @@ Shader "Custom/AlphaTestShader"
 
                 fixed4 m = tex2D(_MainTex,i.uv);
 
-                clip(m-_CutOff);
                 
                 fixed3 ambient = unity_AmbientSky.xyz;
-                fixed3 diffuse = _LightColor0 * m * saturate(dot(worldNormal,lightDir)); 
+                fixed3 diffuse = _LightColor0 * m * saturate(dot(worldNormal,lightDir))*_Color; 
                 fixed3 color =  ambient + diffuse;
-                return fixed4(color.rgb,m.a);
+                return fixed4(color.rgb,m.a*_AlphaScale);
             }
             ENDCG
         }
