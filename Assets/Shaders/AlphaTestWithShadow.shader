@@ -5,40 +5,39 @@ Shader "Custom/AlphaTestWithShadow"
         _MainTex ("Texture", 2D) = "white" {}
         _Specular("Specular",Color) = (1,1,1,1)
         _Gloss("Gloss",Range(1,200)) = 1
-        _CutOff("CutOff",Range(0,1)) = 0
+        _Cutoff("Cut Off",Range(0,1)) = 0.5
         _Color("Diffuse",Color) = (1,1,1,1)
     }
 
     SubShader
     {
-        Tags { "RenderType"="TransparentCutout" "Queue"="AlphaTest" "IgnoreProjector"="True" }
+        
+        Tags{"Queue" = "AlphaTest" "IgnoreProjector"="True" "RenderType" = "TransparentCutout"}
 
         LOD 100
 
         Pass
         {
 
-            Tags { "LightMode" = "ForwardBase"}
+            Tags { "LightMode"="ForwardBase" }
 
-            Cull off
 
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma multi_compile_fwdbase
 
             #include "UnityCG.cginc"
             #include "Lighting.cginc"
             #include "AutoLight.cginc"
 
-            #pragma multi_compile_fwdbase
-
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                float4 pos : SV_POSITION;
-                fixed3 worldPos: POSITION1;
                 fixed3 worldNormal:TEXCOORD1;
+                fixed3 worldPos: POSITION1;
+                float4 pos : SV_POSITION;
                 SHADOW_COORDS(2)
             };
 
@@ -46,17 +45,20 @@ Shader "Custom/AlphaTestWithShadow"
             float4 _MainTex_ST;
             fixed4 _Specular;
             fixed _Gloss;
-            fixed _CutOff;
+            fixed _Cutoff;
             fixed4 _Color;
 
             v2f vert (appdata_base v)
             {
                 v2f o;
                 o.pos = UnityObjectToClipPos(v.vertex);
+                
+                o.worldNormal = UnityObjectToWorldNormal(v.normal);
+                o.worldPos = mul(unity_ObjectToWorld,v.vertex);
+                
                 o.uv = TRANSFORM_TEX(v.texcoord,_MainTex);
 
-                o.worldPos = mul(unity_ObjectToWorld,v.vertex);
-                o.worldNormal = UnityObjectToWorldNormal(v.normal).xyz;
+                
                 TRANSFER_SHADOW(o)
 
                 return o;
@@ -67,11 +69,11 @@ Shader "Custom/AlphaTestWithShadow"
                 fixed3 worldNormal = normalize(i.worldNormal);
                 fixed3 lightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
 
-                fixed4 text = tex2D(_MainTex,i.uv);
+                fixed4 texColor = tex2D(_MainTex,i.uv);
 
-                clip(text.a - _CutOff);
+                clip(texColor.a - _Cutoff);
                 
-                fixed4 albedo = text * _Color;
+                fixed4 albedo = texColor * _Color;
                 
                 fixed4 ambient = unity_AmbientSky * albedo;
 
@@ -89,8 +91,46 @@ Shader "Custom/AlphaTestWithShadow"
             ENDCG
         }
 
-       
+        // 手动实现
+        Pass{
+            // 1. 声明 ShadowCaster LightMode
+            Tags{"LightMode"="ShadowCaster"}
+
+            CGPROGRAM
+            #pragma vertex vert
+            #pragma fragment frag
+            // 2. 设置阴影投射关键字
+            #pragma multi_compile_shadowcaster
+            #include "UnityCG.cginc"
+
+            sampler2D _MainTex;
+            float4 _MainTex_ST;
+            fixed _Cutoff;
+
+            struct v2f{
+                fixed2 uv:TEXCOORD1;
+                V2F_SHADOW_CASTER;
+            };
+
+            v2f vert(appdata_base v){
+                v2f o;
+                o.uv = TRANSFORM_TEX(v.texcoord,_MainTex);
+                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
+                return o;
+            }
+
+            fixed4 frag(v2f i):SV_TARGET{
+                
+                fixed4 textColor = tex2D(_MainTex,i.uv);
+                clip(textColor.a-_Cutoff);
+
+                SHADOW_CASTER_FRAGMENT(i);
+            }
+
+            ENDCG
+        }
+        
     }
 
-    FallBack "Transparent/Cutout/VertexLit"
+    //FallBack "Transparent/Cutout/VertexLit"
 }
