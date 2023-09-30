@@ -1,6 +1,5 @@
-// Upgrade NOTE: replaced '_LightMatrix0' with 'unity_WorldToLight'
 
-Shader "Unlit/ShadowShader"
+Shader "Custom/ShadowShader"
 {
     Properties
     {
@@ -15,7 +14,7 @@ Shader "Unlit/ShadowShader"
 
         Pass
         {
-            Tags  {"LihgtMode" = "ForwardBase"}
+            Tags  {"LightMode" = "ForwardBase"}
             
             CGPROGRAM
             #pragma vertex vert
@@ -63,9 +62,10 @@ Shader "Unlit/ShadowShader"
                 fixed3 halfDir = normalize(viewDir + lightDir);
                 fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(worldNormal,halfDir)),_Gloss);
                 
-                fixed atten = 1.0;
-                fixed shadow= SHADOW_ATTENUATION(i);
-                fixed3 color = ambient + (diffuse + specular)*atten*shadow;
+                // fixed atten = 1.0;
+                //fixed shadow= SHADOW_ATTENUATION(i);
+                UNITY_LIGHT_ATTENUATION(atten,i,i.worldPos);
+                fixed3 color = ambient + (diffuse + specular) * atten;
                 return fixed4(color,1);
             }
             ENDCG
@@ -73,7 +73,7 @@ Shader "Unlit/ShadowShader"
 
         Pass
         {
-            Tags  {"LihgtMode" = "ForwardAdd"}
+            Tags  {"LightMode" = "ForwardAdd"}
 
             Blend One One
             
@@ -122,27 +122,15 @@ Shader "Unlit/ShadowShader"
 
                 fixed3 specular = _LightColor0.rgb * _Specular.rgb * pow(saturate(dot(worldNormal,halfDir)),_Gloss);
 
-
+                
+                UNITY_LIGHT_ATTENUATION(atten,i,i.worldPos);
 
                 fixed3 color = diffuse + specular;
-
-                color.rgb += Shade4PointLights(unity_4LightPosX0,
-                unity_4LightPosY0,
-                unity_4LightPosZ0,
-                unity_LightColor[0],
-                unity_LightColor[1],
-                unity_LightColor[2],
-                unity_LightColor[3],
-                unity_4LightAtten0,
-                i.worldPos,
-                worldNormal);
-
                 
-                return fixed4(color,1);
+                return fixed4(color*atten,1);
             }
             ENDCG
         }
-
         
     }
 

@@ -6,7 +6,7 @@
 
 // Upgrade NOTE: replaced tex2D unity_Lightmap with UNITY_SAMPLE_TEX2D
 
-Shader "Unlit/FowardLightShader"
+Shader "Custom/FowardLightShader"
 {
     Properties
     {
@@ -40,7 +40,6 @@ Shader "Unlit/FowardLightShader"
                 float4 pos : SV_POSITION;
                 float3 worldNormal:POSITION1;
                 float3 worldPos:POSITION2;
-                SHADOW_COORDS(1)
             };
 
             fixed4 _Diffuse;
@@ -54,7 +53,6 @@ Shader "Unlit/FowardLightShader"
                 o.worldNormal = mul(v.normal,unity_WorldToObject);
                 o.worldPos = mul(unity_ObjectToWorld,v.vertex);
                 
-                TRANSFER_SHADOW(o)
 
                 return o;
             }
@@ -73,9 +71,8 @@ Shader "Unlit/FowardLightShader"
                 fixed4 specular =_LightColor0* _Specular * pow(saturate(dot(worldNormal,halfDir)),_Gloss);
 
                 fixed atten = 1.0;
-                fixed shadow= SHADOW_ATTENUATION(i);
 
-                fixed4 color = ambient + (diffuse + specular)*atten*shadow;
+                fixed4 color = ambient + (diffuse + specular)*atten;
                 return color;
             }
             ENDCG
@@ -151,34 +148,8 @@ Shader "Unlit/FowardLightShader"
             ENDCG
         }
 
-        Pass{
-            Tags{"LightMode"="ShadowCaster"}
-
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #pragma multi_compile_shadowcaster
-            #include "UnityCG.cginc"
-
-            struct v2f{
-                V2F_SHADOW_CASTER;
-            };
-
-            v2f vert(appdata_base v){
-                v2f o;
-                TRANSFER_SHADOW_CASTER_NORMALOFFSET(o)
-                return o;
-            }
-
-            fixed4 frag(v2f i):SV_TARGET{
-                SHADOW_CASTER_FRAGMENT(i);
-            }
-
-            ENDCG
-        }
-
     }
-    //Fallback "Specular"
+    Fallback "Specular"
     
 }
 
