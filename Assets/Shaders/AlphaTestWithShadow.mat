@@ -28,7 +28,7 @@ Material:
     m_Floats:
     - _C: 1
     - _CutOff: 0.647
-    - _Cutoff: 0.786
+    - _Cutoff: 0.695
     - _Gloss: 1
     m_Colors:
     - _Color: {r: 1, g: 1, b: 1, a: 1}
