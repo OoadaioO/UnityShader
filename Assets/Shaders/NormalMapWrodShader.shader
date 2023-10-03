@@ -79,7 +79,7 @@ Shader "Unlit/NormalMapWrodShader"
 
                 // 切线空间法线，转变成世界空间法线
                 //fixed3 newNormal = normalize(fixed3(dot(i.w2t0.xyz,bump),dot(i.w2t1.xyz,bump),dot(i.w2t2.xyz,bump)));
-                fixed3 newNormal = normalize(mul(transpose(mword),bump));
+                fixed3 newNormal = normalize(mul(bump,mword));
 
                 fixed4 albedo = tex2D(_MainTex,i.uv.xy);
                 fixed4 ambient = unity_AmbientSky * albedo;

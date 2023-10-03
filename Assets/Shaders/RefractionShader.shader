@@ -61,16 +61,17 @@ Shader "Custom/RefractionShader"
             {
                 fixed3 ambient = _LightColor0.rgb;
 
+
                 fixed3 worldNormal = normalize(i.worldNormal);
                 fixed3 worldLightDir = normalize(UnityWorldSpaceLightDir(i.worldPos));
 
                 fixed3 refraction = texCUBE(_Cubemap,i.worldRefDir).rgb * _RefractionColor.rgb;
 
-               
+                
                 
                 fixed3 diffuse = _LightColor0.rgb * _Color.rgb * saturate(dot(worldNormal , worldLightDir));
                 
-                 UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);
+                UNITY_LIGHT_ATTENUATION(atten, i, i.worldPos);
 
                 fixed3 color = ambient + lerp(diffuse,refraction,_RefractionFraction)*atten;
                 return fixed4(color,1);
