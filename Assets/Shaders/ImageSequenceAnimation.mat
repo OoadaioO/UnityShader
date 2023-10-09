@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GrabPassRefraction
-  m_Shader: {fileID: 4800000, guid: ddc98718abf8849b5b5688ad0b56e26d, type: 3}
+  m_Name: ImageSequenceAnimation
+  m_Shader: {fileID: 4800000, guid: e855c2e4330fb4848970d04251595472, type: 3}
   m_ValidKeywords: []
   m_InvalidKeywords: []
   m_LightmapFlags: 4
@@ -20,21 +20,16 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
-    - _Bumpmap:
-        m_Texture: {fileID: 2800000, guid: d50c93f538de845ef9fa090fb5209e3c, type: 3}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
-    - _Cubemap:
-        m_Texture: {fileID: 8900000, guid: affd133207d3b480c9d838677d456cc1, type: 2}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: 529936518603c43ed964dc1af8cfbcb4, type: 3}
+        m_Texture: {fileID: 2800000, guid: 4474d2218d1233d4d9d99a809b49554b, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Distribution: 69.8
-    - _FractionAmount: 1
+    - _HorizontalAmount: 11
+    - _HorizontalCount: 11
+    - _Speed: 60
+    - _VerticalAmount: 8
+    - _VerticalCount: 8
     m_Colors: []
   m_BuildTextureStacks: []
