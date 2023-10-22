@@ -53,6 +53,8 @@ Shader "Custom/RefractionShader"
                 o.worldNormal = UnityObjectToWorldNormal(v.normal);
                 o.worldViewDir = UnityWorldSpaceViewDir(o.worldPos);
                 o.worldRefDir = refract(-normalize(o.worldViewDir),normalize(o.worldNormal),_RefractionRatio);
+                UnityObjectToViewPos()
+                UnityWorldToViewPos()
                 TRANSFER_SHADOW(o);
                 return o;
             }
